@@ -36,22 +36,37 @@ jobs:
           sudo mkdir -p /projects/$PROJECT_NAME
         EOF
 
-    - name: Check Source Directory Permissions
+    - name: Check Source Directory Permissions and Contents
       run: |
         # Check permissions of the source directory
         if [ -r ./ ]; then
           echo "Source directory is readable."
+          # Print the contents of the source directory
+          ls -l
         else
           echo "Source directory is not readable or does not exist."
           exit 1
         fi
       shell: /bin/bash -e {0}
 
+    - name: SSH into EC2 and Check Destination Directory
+      run: |
+        ssh -vvv -o "StrictHostKeyChecking=no" -i $SSH_IDENTITY_FILE $SSH_HOST << EOF
+          # Check if the destination directory exists
+          if [ -d /projects/$PROJECT_NAME ]; then
+            echo "Destination directory exists."
+          else
+            echo "Destination directory does not exist."
+            exit 1
+          fi
+        EOF
+
     - name: SCP Copy to EC2
       run: |
         scp -vvv -i $SSH_IDENTITY_FILE -r ./ $SSH_HOST:/projects/$PROJECT_NAME
         echo "Passed here oo"
       shell: /usr/bin/bash -e {0}
+
 
     - name: SSH into EC2 and deploy Node.js 18
       run: |

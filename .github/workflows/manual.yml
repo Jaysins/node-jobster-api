@@ -9,6 +9,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest  # You can choose the OS that fits your EC2 instance
 
+    env:
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      SSH_HOST: ubuntu@13.40.19.4
+      SSH_IDENTITY_FILE: ~/.ssh/id_rsa
+      PROJECT_NAME: ${{ github.event.repository.name }}
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -16,39 +22,30 @@ jobs:
     - name: Create SSH key file and directory
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        echo "$SSH_PRIVATE_KEY" > $SSH_IDENTITY_FILE
+        chmod 600 $SSH_IDENTITY_FILE
 
     - name: SSH into EC2 and delete existing files
       run: |
-        ssh -vvv -o "StrictHostKeyChecking=no" -i ~/.ssh/id_rsa ubuntu@13.40.19.4 << EOF
+        ssh -vvv -o "StrictHostKeyChecking=no" -i $SSH_IDENTITY_FILE $SSH_HOST << EOF
           # Remove existing files and directories in the destination path
-          rm -rf /projects/${{ github.event.repository.name }}/*
+          rm -rf /projects/$PROJECT_NAME/*
         EOF
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        # You'll need to add your private key as a secret in your repository settings.
 
     - name: Copy code to EC2
       run: |
-        ssh ubuntu@13.40.19.4 "mkdir -p /projects/${{ github.event.repository.name }}"
-        scp -r ./ ubuntu@13.40.19.4:/projects/${{ github.event.repository.name }}
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        # You'll need to add your private key as a secret in your repository settings.
+        ssh -vvv -i $SSH_IDENTITY_FILE $SSH_HOST "mkdir -p /projects/$PROJECT_NAME"
+        scp -r -i $SSH_IDENTITY_FILE ./ $SSH_HOST:/projects/$PROJECT_NAME
 
     - name: SSH into EC2 and deploy Node.js 18
       run: |
-        ssh ubuntu@13.40.19.4 << EOF
-          
+        ssh -vvv -i $SSH_IDENTITY_FILE $SSH_HOST << EOF
           # Change to your application directory
-          cd /projects/${{ github.event.repository.name }}
+          cd /projects/$PROJECT_NAME
           # Check if the project directory exists
-          if [ -d ${{ github.event.repository.name }} ]; then
+          if [ -d $PROJECT_NAME ]; then
             # The project directory exists, update the code with Git
-            cd ${{ github.event.repository.name }}
+            cd $PROJECT_NAME
             git pull
           else
             # The project directory doesn't exist, no need to clone
@@ -57,5 +54,5 @@ jobs:
           # Install Node.js dependencies
           npm install
           # Start your Node.js application with PM2 using npm run dev
-          pm2 restart ${{ github.event.repository.name }} --update-env || pm2 start "npm run dev -p" --name ${{ github.event.repository.name }}
+          pm2 restart $PROJECT_NAME --update-env || pm2 start "npm run dev -p" --name $PROJECT_NAME
         EOF

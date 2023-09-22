@@ -37,7 +37,7 @@ jobs:
 
     - name: Copy code to EC2
       run: |
-        ssh -vvv -i $SSH_IDENTITY_FILE $SSH_HOST "mkdir -p /projects/$PROJECT_NAME"
+        ssh -vvv -i $SSH_IDENTITY_FILE $SSH_HOST "sudo mkdir -p /projects/$PROJECT_NAME"
         echo "Passed here oo"
         scp -vvv -r -i $SSH_IDENTITY_FILE ./ $SSH_HOST:/projects/$PROJECT_NAME
 

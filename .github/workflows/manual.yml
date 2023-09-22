@@ -39,7 +39,6 @@ jobs:
       run: |
         ssh -vvv -i $SSH_IDENTITY_FILE $SSH_HOST "sudo mkdir -p /projects/$PROJECT_NAME"
         echo "Passed here oo"
-        sudo scp -vvv -r -i $SSH_IDENTITY_FILE ./ $SSH_HOST:/projects/$PROJECT_NAME
 
     - name: SSH into EC2 and deploy Node.js 18
       run: |

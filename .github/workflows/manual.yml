@@ -47,6 +47,7 @@ jobs:
       run: |
         ssh -o "StrictHostKeyChecking=no" -o "ForwardAgent=no" -i /home/runner/.ssh/id_rsa $SSH_HOST << EOF
           sudo mkdir -p projects/$PROJECT_NAME
+          sudo chmod -R 755 projects/$PROJECT_NAME
         EOF
 
     - name: SCP Copy to EC2

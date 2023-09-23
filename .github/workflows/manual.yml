@@ -12,7 +12,7 @@ jobs:
     env:
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       SSH_HOST: ubuntu@13.40.19.4
-      SSH_IDENTITY_FILE: $HOME/.ssh/id_rsa
+      SSH_IDENTITY_FILE: /home/runner/.ssh/id_rsa
       PROJECT_NAME: ${{ github.event.repository.name }}
 
     steps:
@@ -21,15 +21,14 @@ jobs:
 
     - name: Create SSH key file and directory
       run: |
-        mkdir -p $HOME/.ssh
-        echo "$SSH_PRIVATE_KEY" > $SSH_IDENTITY_FILE
-        chmod 600 $SSH_IDENTITY_FILE
+        mkdir -p /home/runner/.ssh
+        echo "$SSH_PRIVATE_KEY" > /home/runner/.ssh/id_rsa
+        chmod 600 /home/runner/.ssh/id_rsa
         eval "$(ssh-agent -s)"
-        ssh-add $SSH_IDENTITY_FILE
+        ssh-add /home/runner/.ssh/id_rsa
       shell: /bin/bash -e {0}
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        SSH_IDENTITY_FILE: $HOME/.ssh/id_rsa
 
     - name: Check Source Directory Permissions and Contents
       run: |
@@ -46,19 +45,19 @@ jobs:
 
     - name: SSH into EC2 and delete existing files
       run: |
-        ssh -o "StrictHostKeyChecking=no" -o "ForwardAgent=no" -i $SSH_IDENTITY_FILE $SSH_HOST << EOF
+        ssh -o "StrictHostKeyChecking=no" -o "ForwardAgent=no" -i /home/runner/.ssh/id_rsa $SSH_HOST << EOF
           sudo mkdir -p projects/$PROJECT_NAME
         EOF
 
     - name: SCP Copy to EC2
       run: |
-        sudo scp -vvv -r -o StrictHostKeyChecking=no -o ForwardAgent=no -i $SSH_IDENTITY_FILE ./ $SSH_HOST:~/projects/$PROJECT_NAME
+        sudo scp -vvv -r -o StrictHostKeyChecking=no -o ForwardAgent=no -i /home/runner/.ssh/id_rsa ./ $SSH_HOST:~/projects/$PROJECT_NAME
         echo "Passed here oo"
       shell: /usr/bin/bash -e {0}
 
     - name: SSH into EC2 and deploy Node.js 18
       run: |
-        ssh -vvv -i $SSH_IDENTITY_FILE $SSH_HOST << EOF
+        ssh -vvv -i /home/runner/.ssh/id_rsa $SSH_HOST << EOF
           # Change to your application directory
           cd /projects/$PROJECT_NAME
           # Check if the project directory exists

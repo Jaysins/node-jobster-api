@@ -32,7 +32,6 @@ jobs:
       run: |
         ssh -vvv -o "StrictHostKeyChecking=no" -i $SSH_IDENTITY_FILE $SSH_HOST << EOF
           # Remove existing files and directories in the destination path
-          rm -rf /projects/$PROJECT_NAME/*
           sudo mkdir -p /projects/$PROJECT_NAME
         EOF
 
@@ -61,12 +60,15 @@ jobs:
           fi
         EOF
 
-    - name: SCP Copy to EC2
-      run: |
-        scp -o StrictHostKeyChecking=no -i $SSH_IDENTITY_FILE  -r ./ $SSH_HOST:/projects/$PROJECT_NAME
-        echo "Passed here oo"
-      shell: /usr/bin/bash -e {0}
-
+    - name: copy file via ssh key
+      uses: appleboy/scp-action@v0.1.4
+      with:
+        host: $SSH_HOST
+        username: ${{ secrets.USERNAME }}
+        port: ${{ secrets.PORT }}
+        key: ${{ secrets.KEY }}
+        source: "tests/a.txt,tests/b.txt"
+        target: your_server_target_folder_path
 
     - name: SSH into EC2 and deploy Node.js 18
       run: |

@@ -49,7 +49,7 @@ jobs:
 
     - name: SCP Copy to EC2
       run: |
-        scp -o StrictHostKeyChecking=no -i $SSH_IDENTITY_FILE  -r ./ $SSH_HOST:~/projects/$PROJECT_NAME
+        sudo scp -o -r StrictHostKeyChecking=no -i $SSH_IDENTITY_FILE ./ $SSH_HOST:~/projects/$PROJECT_NAME
         echo "Passed here oo"
       shell: /usr/bin/bash -e {0}
 

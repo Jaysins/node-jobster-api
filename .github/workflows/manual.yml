@@ -46,6 +46,7 @@ jobs:
     - name: SSH into EC2 and delete existing files
       run: |
         ssh -o "StrictHostKeyChecking=no" -o "ForwardAgent=no" -i /home/runner/.ssh/id_rsa $SSH_HOST << EOF
+          rm -rf ~/projects/$PROJECT_NAME
           sudo mkdir -p ~/projects/$PROJECT_NAME
           sudo chown -R ubuntu ~/projects
         EOF
@@ -54,6 +55,7 @@ jobs:
     - name: SCP Copy to EC2
       run: |
         sudo scp -vvv -r -o StrictHostKeyChecking=no -o ForwardAgent=no -i /home/runner/.ssh/id_rsa * $SSH_HOST:~/projects/$PROJECT_NAME
+        sudo scp -vvv -r -o StrictHostKeyChecking=no -o ForwardAgent=no -i /home/runner/.ssh/id_rsa .env $SSH_HOST:~/projects/$PROJECT_NAME/.env
         echo "Passed here oo"
       shell: /usr/bin/bash -e {0}
 
@@ -64,7 +66,7 @@ jobs:
           cd ~/projects/$PROJECT_NAME
           # Check if the project directory exists
           if [ -d $PROJECT_NAME ]; then
-            # The project directory exists, update the code with Git
+            # The project directory exists,update the code with Git
             cd $PROJECT_NAME
             git pull
           else

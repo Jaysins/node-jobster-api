@@ -46,13 +46,14 @@ jobs:
     - name: SSH into EC2 and delete existing files
       run: |
         ssh -o "StrictHostKeyChecking=no" -o "ForwardAgent=no" -i /home/runner/.ssh/id_rsa $SSH_HOST << EOF
-          sudo mkdir -p projects/$PROJECT_NAME
+          sudo mkdir -p ~/projects/$PROJECT_NAME
+          sudo chown -R ubuntu ~/projects
         EOF
         
 
     - name: SCP Copy to EC2
       run: |
-        sudo scp -vvv -r -o StrictHostKeyChecking=no -o ForwardAgent=no -i /home/runner/.ssh/id_rsa $(pwd) $SSH_HOST:~/projects
+        sudo scp -vvv -r -o StrictHostKeyChecking=no -o ForwardAgent=no -i /home/runner/.ssh/id_rsa * $SSH_HOST:~/projects/$PROJECT_NAME
         echo "Passed here oo"
       shell: /usr/bin/bash -e {0}
 

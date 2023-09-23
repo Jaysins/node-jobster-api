@@ -30,10 +30,7 @@ jobs:
 
     - name: SSH into EC2 and delete existing files
       run: |
-        ssh -vvv -o "StrictHostKeyChecking=no" -i $SSH_IDENTITY_FILE $SSH_HOST << EOF
-          # Remove existing files and directories in the destination path
-          echo $(ls)
-          
-          sudo mkdir -p /projects/$PROJECT_NAME
+        ssh -o "StrictHostKeyChecking=no" -i $SSH_IDENTITY_FILE $SSH_HOST << EOF
+          sudo mkdir -p ubuntu@13.40.19.4:/projects/$PROJECT_NAME
         EOF
         echo "I did itttt"

@@ -32,7 +32,7 @@ jobs:
       run: |
         ssh -vvv -o "StrictHostKeyChecking=no" -i $SSH_IDENTITY_FILE $SSH_HOST << EOF
           # Remove existing files and directories in the destination path
-          echo ls -l
+          echo "ls -l"
           
           sudo mkdir -p /projects/$PROJECT_NAME
         EOF

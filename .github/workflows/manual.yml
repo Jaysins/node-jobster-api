@@ -28,6 +28,19 @@ jobs:
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
 
+    - name: Check Source Directory Permissions and Contents
+      run: |
+        # Check permissions of the source directory
+        if [ -r ./ ]; then
+          echo "Source directory is readable."
+          # Print the contents of the source directory
+          ls -l ./
+        else
+          echo "Source directory is not readable or does not exist."
+          exit 1
+        fi
+      shell: /bin/bash -e {0}
+
     - name: SSH into EC2 and delete existing files
       run: |
         ssh -o "StrictHostKeyChecking=no" -i $SSH_IDENTITY_FILE $SSH_HOST << EOF

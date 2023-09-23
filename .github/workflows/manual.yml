@@ -61,7 +61,7 @@ jobs:
       run: |
         ssh -vvv -i /home/runner/.ssh/id_rsa $SSH_HOST << EOF
           # Change to your application directory
-          cd /projects/$PROJECT_NAME
+          cd ~/projects/$PROJECT_NAME
           # Check if the project directory exists
           if [ -d $PROJECT_NAME ]; then
             # The project directory exists, update the code with Git

@@ -55,7 +55,8 @@ jobs:
     - name: SCP Copy to EC2
       run: |
         sudo scp -vvv -r -o StrictHostKeyChecking=no -o ForwardAgent=no -i /home/runner/.ssh/id_rsa * $SSH_HOST:~/projects/$PROJECT_NAME
-        sudo scp -vvv -r -o StrictHostKeyChecking=no -o ForwardAgent=no -i /home/runner/.ssh/id_rsa .env $SSH_HOST:~/projects/$PROJECT_NAME/.env
+        sudo scp -vvv -r -o StrictHostKeyChecking=no -o ForwardAgent=no -i /home/runner/.ssh/id_rsa .env $SSH_HOST:~/projects/$PROJECT_NAME/.env || echo "no env here"
+        
         echo "Passed here oo"
       shell: /usr/bin/bash -e {0}
 

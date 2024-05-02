@@ -1,9 +1,11 @@
-name: Deploy to EC2
+name: Ogaboga
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'version tag'
+        required: false
 
 jobs:
   deploy:

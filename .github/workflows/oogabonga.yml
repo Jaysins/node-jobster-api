@@ -1,0 +1,20 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      SSH_HOST: ubuntu@13.40.19.4
+      SSH_IDENTITY_FILE: /home/runner/.ssh/id_rsa
+      PROJECT_NAME: ${{ github.event.repository.name }}
+
+    steps:
+    - name: Checkout code
+      uses: horellana/openconnect@v1.0.1

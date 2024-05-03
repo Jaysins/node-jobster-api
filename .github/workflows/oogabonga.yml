@@ -8,18 +8,30 @@ on:
         required: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-
-    env:
-      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      VPN_USER: deploymentagent
-      VPN_PWD: '!QW@3er4@.d3PloY12'
-      VPN_HOST: myidentitypass.local
-      VPN_PORT: 8050
-
     steps:
-    - name: Checkout code
-      uses: horellana/openconnect@v1.0.1
-      with:
-        VPN_USER: deploymentagent
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install Wine (for running AutoHotkey)
+        run: sudo apt-get update && sudo apt-get install wine -y
+      - name: Install AutoHotkey
+        run: sudo apt-get install autohotkey -y
+      - name: Start FortiClient VPN
+        run: |
+          echo "Starting FortiClient VPN..."
+          echo "${{ vars.AHKFILE }}" > forticlient_auto_connect.ahk
+          wine AutoHotkey.exe forticlient_auto_connect.ahk # Replace with your AutoHotkey script
+      - name: Run CI/CD tasks behind VPN
+        run: |
+          echo "Running CI/CD tasks behind FortiClient VPN..."
+          # Execute your CI/CD tasks here
+          # For example:
+          # npm install
+          # npm run build
+          # ./deploy.sh
+      - name: Stop FortiClient VPN (if needed)
+        run: |
+          # If you need to stop the VPN connection after CI/CD tasks
+          echo "Stopping FortiClient VPN..."
+          # Command to stop the FortiClient VPN connection

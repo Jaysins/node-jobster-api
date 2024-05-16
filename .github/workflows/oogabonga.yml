@@ -1,4 +1,4 @@
-name: Ogaboga
+name: GitHub Action
 
 on:
   workflow_dispatch:
@@ -8,28 +8,25 @@ on:
         required: false
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Install Wine (for running AutoHotkey)
-        run: sudo apt-get update && sudo apt-get install wine -y
-      - name: Start FortiClient VPN
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: 'Create env file'
         run: |
-          echo "Starting FortiClient VPN..."
-          echo "${{ vars.AHKFILE }}" > forticlient_auto_connect.ahk
-          wine AutoHotkey.exe forticlient_auto_connect.ahk # Replace with your AutoHotkey script
-      - name: Run CI/CD tasks behind VPN
+          echo "${{ secrets.CLIENT_OVPN }}" > client.ovpn
+          
+      - name: Install OpenVPN
         run: |
-          echo "Running CI/CD tasks behind FortiClient VPN..."
-          # Execute your CI/CD tasks here
-          # For example:
-          # npm install
-          # npm run build
-          # ./deploy.sh
-      - name: Stop FortiClient VPN (if needed)
-        run: |
-          # If you need to stop the VPN connection after CI/CD tasks
-          echo "Stopping FortiClient VPN..."
-          # Command to stop the FortiClient VPN connection
+          sudo apt update
+          sudo apt install -y openvpn openvpn-systemd-resolved
+
+      - name: Connect to VPN
+        uses: "kota65535/github-openvpn-connect-action@v2"
+        with:
+          config_file: client.ovpn
+          username: deploymentagent
+          password: !QW@3er4d#ploy!@#@423

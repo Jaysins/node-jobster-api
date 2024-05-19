@@ -15,19 +15,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: 'Create env file'
-        run: |
-          echo "${{ secrets.CLIENT_OVPN }}" > client.ovpn
-          
-      - name: Install OpenVPN
-        run: |
-          sudo apt update
-          sudo apt install -y openvpn openvpn-systemd-resolved
 
-      - name: Connect to VPN
-        uses: "kota65535/github-openvpn-connect-action@v2"
-        with:
-          config_file: client.ovpn
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@v1.0.3
         with:

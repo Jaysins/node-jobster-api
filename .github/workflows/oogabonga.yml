@@ -28,5 +28,4 @@ jobs:
         uses: "kota65535/github-openvpn-connect-action@v2"
         with:
           config_file: client.ovpn
-          username: "deploymentagent"
-          password: "!QW@3er4d#ploy!@#@423"
+

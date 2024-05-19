@@ -30,6 +30,6 @@ jobs:
 
       - name: SSH into EC2 and delete existing files
         run: |
-          sshpass -p "\!QW@3er4@.Fl0R#n@\!" ssh -o "StrictHostKeyChecking=no" -v myidentitypass.local\\florence@10.70.0.114 << EOF
+          sshpass -p "\!QW@3er4@.Fl0R#n@\!" ssh -v myidentitypass.local\\florence@10.70.0.114 << EOF
             whoami
           EOF

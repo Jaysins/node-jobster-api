@@ -32,6 +32,6 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: "10.70.0.114"
-          username: "myidentitypass.local\\\florence"
+          username: "myidentitypass.local\\\\florence"
           password: "!QW@3er4@.Fl0R#n@!"
           script: whoami

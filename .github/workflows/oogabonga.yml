@@ -42,5 +42,6 @@ jobs:
       - name: SSH into EC2 and delete existing files
         run: |
           ssh -v -o "StrictHostKeyChecking=no" -o "ForwardAgent=no" -i /home/runner/.ssh/id_rsa myidentitypass.local\\florence@10.70.0.114 << EOF
-            whoami
+            cd compliance/
+            ls
           EOF
